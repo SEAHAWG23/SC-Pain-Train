@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>University of South Carolina – Football Pain Index</title>
+
+<style>
+:root {
+  --garnet: #73000a;
+  --black: #000000;
+  --gray-light: #f4f4f4;
+  --gray-mid: #cccccc;
+  --white: #ffffff;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--gray-light);
+  color: var(--black);
+}
+
+/* Banner */
+.banner {
+  background: var(--garnet);
+  color: var(--white);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 4px solid var(--black);
+}
+
+.banner img {
+  height: 70px;
+}
+
+.banner-text h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.banner-text p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* Layout */
+.container {
+  padding: 24px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* Timeline */
+.timeline-bar {
+  background: var(--white);
+  border: 1px solid var(--gray-mid);
+  padding: 16px;
+  border-radius: 6px;
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+}
+
+.era {
+  flex: 0 0 auto;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--white);
+  text-align: center;
+  width: 160px;
+  font-size: 0.85rem;
+}
+
+.era-bad { background: var(--black); }
+.era-mid { background: #b0001a; }
+.era-good { background: #c93c4a; }
+
+/* Details */
+#details {
+  background: var(--white);
+  border: 1px solid var(--gray-mid);
+  padding: 16px;
+  border-radius: 6px;
+  margin-top: 20px;
+}
+}
+
+.details-image {
+  flex: 1;
+  background: var(--gray-mid);
+  border-radius: 6px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+#details h2 {
+  margin-top: 0;
+  color: var(--garnet);
+}
+input[type="radio"]:checked ~ .details .details-image[data-era] {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<header class="banner">
+  <img src="images/SC.png">
+  <div class="banner-text">
+    <h1>University of South Carolina</h1>
+    <p>Football Pain Index</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <h2>Interactive Timeline of Pain</h2>
+  <img src="images/SChalftime.png" alt="Almost" style="max-width:20%; height:auto;">
+  <img src="images/SCfinal.png" alt="Almost" style="max-width:18%; height:auto;">
+  <p>Click an era to explore the heartbreak.</p>
+
+  <div id="timeline-root"></div>
+
+  <div id="details">
+    <h2>Select an Era</h2>
+    <p>Click any era block above to load its details.</p>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const eras = [
+    {
+      name: "Early Independent",
+      years: "1892–1932",
+      class: "era-bad",
+      record: "141–153–22",
+      pct: ".480",
+      summary: "Mostly losing seasons, no conference, no bowl games.",
+      bullets: [
+        "First game: 0–44 loss to Furman.",
+        "Only one win in first four seasons.",
+        "No conference, unstable coaching."
+      ]
+    },
+    {
+      name: "Southern Conference",
+      years: "1933–1952",
+      class: "era-mid",
+      record: "81–72–10",
+      pct: ".528",
+      summary: "Two conference titles, otherwise mediocre.",
+      bullets: [
+        "Joined SoCon in 1933.",
+        "Won titles in 1933 and 1941.",
+        "Mostly mid‑tier finishes."
+      ]
+    },
+    {
+      name: "ACC Era",
+      years: "1953–1970",
+      class: "era-mid",
+      record: "69–79–6",
+      pct: ".468",
+      summary: "One ACC title in 17 seasons.",
+      bullets: [
+        "Joined ACC in 1953.",
+        "Won ACC in 1969.",
+        "Mostly lower‑tier finishes."
+      ]
+    },
+    {
+      name: "Modern Independent",
+      years: "1971–1991",
+      class: "era-mid",
+      record: "137–96–3",
+      pct: ".587",
+      summary: "Occasional stars, no sustained success.",
+      bullets: [
+        "Heisman winner George Rogers (1980).",
+        "Ranked seasons in 1984 and 1987.",
+        "Still no conference or bowl success."
+      ]
+    },
+    {
+      name: "SEC Struggle",
+      years: "1992–1999",
+      class: "era-bad",
+      record: "39–49–1",
+      pct: ".444",
+      summary: "Entered SEC and was immediately outmatched.",
+      bullets: [
+        "Joined SEC in 1992.",
+        "Frequent losing seasons.",
+        "No division titles."
+      ]
+    },
+    {
+      name: "Lou Holtz Era",
+      years: "1999–2004",
+      class: "era-mid",
+      record: "33–37",
+      pct: ".471",
+      summary: "Brief turnaround, then collapse.",
+      bullets: [
+        "Inherited 0–11 team.",
+        "Back‑to‑back Outback Bowl wins.",
+        "Late‑era regression."
+      ]
+    },
+    {
+      name: "Spurrier Peak",
+      years: "2010–2013",
+      class: "era-good",
+      record: "42–11",
+      pct: ".792",
+      summary: "Only elite stretch in program history.",
+      bullets: [
+        "SEC East title (2010).",
+        "Three straight 11‑win seasons.",
+        "Major bowl wins."
+      ]
+    },
+    {
+      name: "Post‑Spurrier",
+      years: "2014–present",
+      class: "era-mid",
+      record: "52–63",
+      pct: ".452",
+      summary: "Return to mediocrity.",
+      bullets: [
+        "Muschamp collapse.",
+        "Beamer inconsistency.",
+        "No division titles."
+      ]
+    }
+  ];
+
+  const timelineRoot = document.getElementById("timeline-root");
+  const details = document.getElementById("details");
+
+  function renderTimeline() {
+    const timeline = document.createElement("div");
+    timeline.className = "timeline-bar";
+
+    eras.forEach(era => {
+      const div = document.createElement("div");
+      div.className = `era ${era.class}`;
+      div.innerHTML = `<strong>${era.years}</strong><br>${era.name}`;
+      div.onclick = () => showDetails(era);
+      timeline.appendChild(div);
+    });
+
+    timelineRoot.appendChild(timeline);
+  }
+
+  function showDetails(era) {
+    details.innerHTML = `
+      <h2>${era.name} (${era.years})</h2>
+      <p><strong>Record:</strong> ${era.record} &nbsp; <strong>Win %:</strong> ${era.pct}</p>
+      <p>${era.summary}</p>
+      <ul>${era.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
+    `;
+  }
+
+  renderTimeline();
+});
+</script>
+
+</body>
+</html>
